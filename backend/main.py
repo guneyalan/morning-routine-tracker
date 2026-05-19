@@ -7,7 +7,7 @@ from backend.analysis import (
 )
 from backend.storage import get_routines_dataframe
 
-
+from backend.storage import delete_routine_entry
 from fastapi import FastAPI
 
 from backend.models import RoutineEntry
@@ -86,23 +86,21 @@ def get_statistics():
 @app.get("/ai-feedback")
 def get_ai_feedback():
     """
-    Genererer feedback på brugerens morgenrutine.
+    Genererer AI-feedback på den seneste morgenrutine.
 
-    Endpointet bruger først statistik fra backend.
-    Derefter sendes statistikken til AI-feedback-modulet.
-    Hvis Mistral API ikke er sat op, bruges lokal fallback-feedback.
+    Feedbacken bruger både tal, valg, opgaver og brugerens egne tanker.
     """
 
     dataframe = get_routines_dataframe()
 
-    statistics = {
-        "average_sleep": calculate_average_sleep(dataframe),
-        "average_mood": calculate_average_mood(dataframe),
-        "training_days": count_training_days(dataframe),
-        "total_entries": len(dataframe),
-    }
+    if dataframe.empty:
+        return {
+            "feedback": "Der er endnu ingen registreringer at give feedback på."
+        }
 
-    feedback = generate_ai_feedback(statistics)
+    latest_entry = dataframe.tail(1).to_dict(orient="records")[0]
+
+    feedback = generate_ai_feedback(latest_entry)
 
     return {
         "feedback": feedback

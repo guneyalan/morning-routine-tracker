@@ -4,70 +4,108 @@ import requests
 from dotenv import load_dotenv
 
 
-load_dotenv()
+load_dotenv(".env")
 
 
-def generate_simple_feedback(statistics: dict) -> str:
+def generate_simple_feedback(routine: dict) -> str:
     """
-    Laver en simpel fallback-feedback uden API.
-
-    Denne funktion gør projektet stabilt til eksamen,
-    selv hvis Mistral API-nøglen ikke er sat op.
+    Lokal fallback-feedback hvis Mistral API ikke svarer.
     """
 
-    average_sleep = statistics.get("average_sleep", 0)
-    average_mood = statistics.get("average_mood", 0)
+    sleep_hours = float(routine.get("sleep_hours", 0) or 0)
+    mood = int(routine.get("mood", 0) or 0)
+    training = routine.get("training")
+    shower_type = routine.get("shower_type", "ukendt")
+    thoughts = routine.get("thoughts", "")
 
-    if average_sleep < 6:
-        return "Du sover forholdsvis lidt. Prøv at prioritere mere søvn."
+    feedback_parts = []
 
-    if average_mood >= 8:
-        return "Dit gennemsnitlige humør ser stærkt ud. Din rutine virker stabil."
+    if sleep_hours < 6:
+        feedback_parts.append("Du har sovet lidt i nat, så det giver mening at holde dagen enkel.")
+    else:
+        feedback_parts.append("Din søvn ser fornuftig ud og giver et godt udgangspunkt for dagen.")
 
-    return "Din morgenrutine er registreret fint. Fortsæt med at samle data."
+    if training is True:
+        feedback_parts.append("Det er stærkt, at du har fået træning ind i rutinen.")
+    else:
+        feedback_parts.append("Hvis du har energi senere, kan en kort gåtur være et godt og realistisk valg.")
+
+    feedback_parts.append(f"Dit valg af bad var: {shower_type}.")
+
+    if mood <= 5:
+        feedback_parts.append("Dit humør ligger lidt lavt, så vær ekstra venlig mod dig selv i dag.")
+    else:
+        feedback_parts.append("Dit humør ser stabilt ud, og det er et godt tegn.")
+
+    if thoughts:
+        feedback_parts.append("Det er positivt, at du sætter ord på dine tanker, fordi det giver mere klarhed.")
+
+    feedback_parts.append("Fortsæt med små stabile skridt — det er sådan gode rutiner bygges.")
+
+    return " ".join(feedback_parts)
 
 
-def generate_ai_feedback(statistics: dict) -> str:
+def generate_ai_feedback(routine: dict) -> str:
     """
-    Forsøger at hente AI-feedback fra Mistral API.
-
-    Hvis der ikke findes en API-nøgle, bruger programmet
-    en simpel lokal fallback-feedback.
+    Forsøger at hente feedback fra Mistral.
+    Hvis API'et fejler, bruges lokal fallback-feedback.
     """
 
     api_key = os.getenv("MISTRAL_API_KEY")
 
     if not api_key:
-        return generate_simple_feedback(statistics)
+        return generate_simple_feedback(routine)
 
     prompt = f"""
-    Giv kort og konkret feedback på denne morgenrutine-statistik:
-    {statistics}
+Du er en rolig og støttende morgenrutine-coach.
 
-    Svar på dansk i 2-3 sætninger.
-    """
+Giv kort og personlig feedback på denne morgenregistrering:
 
-    response = requests.post(
-        "https://api.mistral.ai/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": "mistral-small-latest",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-        },
-        timeout=20,
-    )
+Dato: {routine.get("date")}
+Stod op: {routine.get("wake_up_time")}
+Søvn: {routine.get("sleep_hours")} timer
+Træning: {routine.get("training")}
+Bad: {routine.get("shower_type")}
+Morgenmad: {routine.get("breakfast")}
+Vand: {routine.get("water_glasses")} glas
+Humør: {routine.get("mood")}/10
 
-    if response.status_code != 200:
-        return generate_simple_feedback(statistics)
+Dagens tre vigtigste opgaver:
+1. {routine.get("task_1")}
+2. {routine.get("task_2")}
+3. {routine.get("task_3")}
 
-    data = response.json()
+Tanker:
+{routine.get("thoughts")}
 
-    return data["choices"][0]["message"]["content"]
+Krav:
+- Svar på dansk
+- Maksimalt 5 sætninger
+- Kommentér rutiner, opgaver og tanker
+- Giv ét konkret råd
+- Slut positivt og opløftende
+- Brug aldrig emojis
+"""
+
+    try:
+        response = requests.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "open-mistral-7b",
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=8,
+        )
+
+        if response.status_code != 200:
+            return generate_simple_feedback(routine)
+
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
+
+    except requests.exceptions.RequestException:
+        return generate_simple_feedback(routine)

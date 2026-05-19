@@ -7,44 +7,58 @@ from backend.models import RoutineEntry
 
 DATA_FILE = Path("data/routines.csv")
 
+COLUMNS = [
+    "id",
+    "date",
+    "wake_up_time",
+    "sleep_hours",
+    "training",
+    "shower_type",
+    "breakfast",
+    "water_glasses",
+    "task_1",
+    "task_2",
+    "task_3",
+    "mood",
+    "thoughts",
+]
+
+
 
 def ensure_data_file_exists() -> None:
     """
     Sikrer at CSV-filen findes og har de rigtige kolonner.
-
-    Funktionen bruges før vi læser eller skriver data,
-    så programmet ikke crasher hvis filen er tom eller mangler.
     """
 
     if not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0:
-        columns = [
-            "date",
-            "sleep_hours",
-            "water_glasses",
-            "training",
-            "meditation",
-            "mood",
-            "shower_type",
-        ]
+        pd.DataFrame(columns=COLUMNS).to_csv(DATA_FILE, index=False)
+        return
 
-        empty_dataframe = pd.DataFrame(columns=columns)
-        empty_dataframe.to_csv(DATA_FILE, index=False)
+    dataframe = pd.read_csv(DATA_FILE)
+
+    for column in COLUMNS:
+        if column not in dataframe.columns:
+            dataframe[column] = ""
+
+    dataframe = dataframe[COLUMNS]
+    dataframe.to_csv(DATA_FILE, index=False)
 
 
 def save_routine_entry(entry: RoutineEntry) -> dict:
     """
-    Gemmer én morgenrutine i CSV-filen.
-
-    Først læser vi eksisterende data.
-    Derefter tilføjer vi den nye række.
-    Til sidst gemmer vi hele CSV-filen igen.
+    Gemmer én morgenrutine.
     """
 
     ensure_data_file_exists()
 
     dataframe = pd.read_csv(DATA_FILE)
 
-    new_row = pd.DataFrame([entry.model_dump()])
+    next_id = 1 if dataframe.empty else int(dataframe["id"].max()) + 1
+
+    new_data = entry.model_dump()
+    new_data["id"] = next_id
+
+    new_row = pd.DataFrame([new_data])
 
     updated_dataframe = pd.concat(
         [dataframe, new_row],
@@ -55,16 +69,13 @@ def save_routine_entry(entry: RoutineEntry) -> dict:
 
     return {
         "message": "Rutine gemt",
-        "entry": entry.model_dump(),
+        "entry": new_data,
     }
 
 
 def get_all_routine_entries() -> list[dict]:
     """
-    Henter alle morgenrutiner fra CSV-filen.
-
-    Data returneres som en liste af dictionaries,
-    fordi FastAPI nemt kan sende det tilbage som JSON.
+    Henter alle rutiner.
     """
 
     ensure_data_file_exists()
@@ -73,14 +84,31 @@ def get_all_routine_entries() -> list[dict]:
 
     return dataframe.to_dict(orient="records")
 
+
 def get_routines_dataframe() -> pd.DataFrame:
     """
-    Henter alle morgenrutiner som en Pandas DataFrame.
-
-    Denne funktion bruges af analyse-delen,
-    fordi Pandas og NumPy arbejder bedst med DataFrames.
+    Returnerer data som Pandas DataFrame.
     """
 
     ensure_data_file_exists()
 
     return pd.read_csv(DATA_FILE)
+
+
+
+def delete_routine_entry(entry_id: int) -> dict:
+    """
+    Sletter én registrering ud fra dens id.
+    """
+
+    ensure_data_file_exists()
+
+    dataframe = pd.read_csv(DATA_FILE)
+
+    if dataframe.empty or entry_id not in dataframe["id"].values:
+        return {"message": "Registrering ikke fundet"}
+
+    dataframe = dataframe[dataframe["id"] != entry_id]
+    dataframe.to_csv(DATA_FILE, index=False)
+
+    return {"message": "Registrering slettet"}
