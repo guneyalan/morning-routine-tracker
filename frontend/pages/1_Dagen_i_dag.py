@@ -1,10 +1,15 @@
+import os
 import requests
 import streamlit as st
 
 
-API_URL = "http://127.0.0.1:8000"
+# URL til FastAPI-backend.
+# Frontend bruger denne adresse til at sende og hente data.
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 
+# Konfigurerer Streamlit-siden.
+# centered-layout gør formularen mere fokuseret og læsbar.
 st.set_page_config(
     page_title="Registrering",
     layout="centered",
@@ -12,26 +17,34 @@ st.set_page_config(
 )
 
 
+# Custom CSS styling.
+# Bruges til at skabe et mere moderne og minimalistisk design.
 st.markdown(
     """
     <style>
+
+    /* Skjuler Streamlits standardmenu og footer */
     #MainMenu, footer {
         visibility: hidden;
     }
 
+    /* Styling af hele appens baggrund og tekst */
     .stApp {
         background-color: #f3f4f6;
         color: #111827;
     }
 
+    /* Begrænser bredden på indholdet
+       og skaber luft omkring formularen */
     .block-container {
-    max-width: 950px;
-    padding-top: 2rem;
-    padding-bottom: 4rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+        max-width: 950px;
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
+    /* Styling af hver container-boks */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff;
         border: 2px solid #cbd5e1;
@@ -41,48 +54,56 @@ st.markdown(
         box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
     }
 
+    /* Sikrer tydelige tekstfarver */
     h1, h2, h3, label, p, span {
         color: #111827 !important;
     }
 
-div[data-testid="stFormSubmitButton"] {
-    display: flex;
-    justify-content: flex-end;
-}
+    /* Flytter submit-knappen mod højre */
+    div[data-testid="stFormSubmitButton"] {
+        display: flex;
+        justify-content: flex-end;
+    }
 
-div[data-testid="stFormSubmitButton"] button {
-    width: 260px;
-    height: 55px;
-    border-radius: 12px;
-    border: none;
-    background-color: #111827 !important;
-    color: #ffffff !important;
-    font-size: 18px;
-    font-weight: 600;
-}
+    /* Styling af submit-knappen */
+    div[data-testid="stFormSubmitButton"] button {
+        width: 260px;
+        height: 55px;
+        border-radius: 12px;
+        border: none;
+        background-color: #111827 !important;
+        color: #ffffff !important;
+        font-size: 18px;
+        font-weight: 600;
+    }
 
-div[data-testid="stFormSubmitButton"] button p {
-    color: #ffffff !important;
+    /* Sikrer at teksten i knappen er hvid */
+    div[data-testid="stFormSubmitButton"] button p {
+        color: #ffffff !important;
+    }
 
-
-}
-</style>
+    </style>
     """,
     unsafe_allow_html=True,
 )
 
 
+# Titel på registreringssiden.
 st.title("Registrering")
 
 
+# Opretter formular til dagens morgenrutine.
+# Formularen samler alle inputfelter før data sendes samlet.
 with st.form("routine_form"):
 
+    # Dato-container.
     with st.container(border=True):
         st.subheader("Dato")
 
         date = st.date_input("Dato")
 
 
+    # Container til dagens vigtigste opgaver.
     with st.container(border=True):
         st.subheader("Dagens tre vigtigste opgaver")
 
@@ -91,14 +112,17 @@ with st.form("routine_form"):
         task_3 = st.text_input("Opgave 3")
 
 
+    # Søvn-container.
     with st.container(border=True):
         st.subheader("Søvn")
 
+        # Tidspunkt brugeren stod op.
         wake_up_time = st.text_input(
             "Hvornår stod du op?",
             "05:30",
         )
 
+        # Antal timers søvn.
         sleep_hours = st.number_input(
             "Timer sovet",
             0.0,
@@ -108,9 +132,12 @@ with st.form("routine_form"):
         )
 
 
+    # Trænings-container.
     with st.container(border=True):
         st.subheader("Træning")
 
+        # Radio-knapper returnerer tekst,
+        # derfor omdannes svaret til True eller False.
         training = st.radio(
             "Har du trænet?",
             ["Ja", "Nej"],
@@ -118,9 +145,11 @@ with st.form("routine_form"):
         ) == "Ja"
 
 
+    # Bad-container.
     with st.container(border=True):
         st.subheader("Bad")
 
+        # Brugeren vælger type af bad.
         shower_type = st.selectbox(
             "Bad-type",
             [
@@ -131,6 +160,7 @@ with st.form("routine_form"):
         )
 
 
+    # Morgenmads-container.
     with st.container(border=True):
         st.subheader("Morgenmad")
 
@@ -141,9 +171,11 @@ with st.form("routine_form"):
         ) == "Ja"
 
 
+    # Vand-container.
     with st.container(border=True):
         st.subheader("Vand")
 
+        # Registrerer antal glas vand.
         water_glasses = st.number_input(
             "Antal glas vand",
             0,
@@ -152,9 +184,11 @@ with st.form("routine_form"):
         )
 
 
+    # Humør-container.
     with st.container(border=True):
         st.subheader("Humør")
 
+        # Humør registreres på en skala fra 1 til 10.
         mood = st.slider(
             "Humør",
             1,
@@ -162,17 +196,22 @@ with st.form("routine_form"):
             8,
         )
 
+        # Brugeren kan skrive tanker og refleksioner.
         thoughts = st.text_area(
             "Hvilke tanker fylder i dag?",
             height=120,
         )
 
 
+    # Formularens submit-knap.
     submitted = st.form_submit_button("Gem morgenrutine")
 
 
+# Kører kun når brugeren trykker på submit-knappen.
 if submitted:
 
+    # Samler alle inputdata i dictionary-format.
+    # Data sendes som JSON til FastAPI-backend.
     data = {
         "date": str(date),
         "wake_up_time": wake_up_time,
@@ -189,16 +228,20 @@ if submitted:
     }
 
     try:
+        # Sender registreringen til backend via HTTP POST-request.
         response = requests.post(
             f"{API_URL}/routines",
             json=data,
         )
 
+        # Hvis registreringen lykkes vises succesbesked.
         if response.status_code == 200:
             st.success("Morgenrutine gemt")
 
+        # Hvis backend returnerer fejl vises fejlbesked.
         else:
             st.error("Noget gik galt")
 
+    # Hvis backend-serveren ikke kører.
     except requests.exceptions.ConnectionError:
         st.error("Backend kører ikke")
