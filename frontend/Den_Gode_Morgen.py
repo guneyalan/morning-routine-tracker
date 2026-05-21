@@ -1,58 +1,36 @@
 import streamlit as st
 
+from styles import apply_base_style
 
-# Konfigurerer Streamlit-siden.
-# wide-layout giver mere plads til indholdet.
-# expanded gør at sidebar starter åben.
+
+# Konfigurerer forsiden.
+# wide-layout giver mere plads til sidens indhold.
 st.set_page_config(
-    page_title="",
+    page_title="Den gode morgen",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 
-# Custom CSS styling.
-# Bruges til at skabe et mere moderne og minimalistisk design.
+# Indlæser fælles CSS-styling.
+# Styling ligger i styles.py for at undgå gentaget CSS-kode.
 st.markdown(
-    """
-    <style>
-
-    /* Skjuler Streamlits standardmenu og footer */
-    #MainMenu, footer{
-        visibility: hidden;
-    }
-
-    /* Overordnet styling af appens baggrund og tekstfarver */
-    .stApp {
-        background: #f5f5f3;
-        color: #222;
-    }
-
-    /* Begrænser bredden på indholdet
-       så layoutet bliver mere clean og læsbart */
-    .block-container {
-        max-width: 900px;
-        padding-top: 5rem;
-    }
-
-    </style>
-    """,
+    apply_base_style(),
     unsafe_allow_html=True,
 )
 
 
-# Hovedtitel på forsiden.
+# Forsidens hovedtitel.
 st.title("Den gode morgen")
 
 
 # Kort introduktion til appens formål.
-# Forklarer brugeren hvad applikationen bruges til.
 st.write(
     """
-    Det er vigtigt med en god start på dagen. 
+    Det er vigtigt med en god start på dagen.
 
-    En fast morgenrutine er guld værd. 
-    
+    En fast morgenrutine er guld værd.
+
     Her kan du registrere dine morgenrutiner og få AI-feedback på dine rutiner.
 
     Vi holder det simpelt og fokuserer på det vigtigste.
@@ -60,7 +38,7 @@ st.write(
 )
 
 
-# Opretter tre kolonner som bruges til navigation mellem siderne.
+# Navigation til appens tre hovedsider.
 col1, col2, col3 = st.columns(3)
 
 
@@ -72,7 +50,7 @@ with col1:
     )
 
 
-# Link til statistik-siden.
+# Link til statistik- og registreringssiden.
 with col2:
     st.page_link(
         "pages/2_Registreringer.py",
@@ -80,7 +58,7 @@ with col2:
     )
 
 
-# Link til AI-feedback siden.
+# Link til AI-feedback-siden.
 with col3:
     st.page_link(
         "pages/3_AI_Coach.py",

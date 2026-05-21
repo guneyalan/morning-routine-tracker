@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import requests
 import streamlit as st
+from styles import apply_base_style
 
 
 # URL til FastAPI-backend.
@@ -18,33 +19,13 @@ st.set_page_config(
 )
 
 
-# Simpel CSS styling.
-# Bruges til at give siden samme rene look som resten af appen.
+# Indlæser fælles CSS-styling.
+# Styling ligger i styles.py for at undgå gentaget CSS-kode.
 st.markdown(
-    """
-    <style>
-
-    /* Skjuler Streamlits standardmenu og footer */
-    #MainMenu, footer{
-        visibility: hidden;
-    }
-
-    /* Styling af appens baggrund og tekstfarve */
-    .stApp {
-        background: #f5f5f3;
-        color: #222;
-    }
-
-    /* Begrænser bredden på indholdet */
-    .block-container {
-        max-width: 1100px;
-        padding-top: 2rem;
-    }
-
-    </style>
-    """,
+    apply_base_style(),
     unsafe_allow_html=True,
 )
+
 
 
 # Titel på siden.

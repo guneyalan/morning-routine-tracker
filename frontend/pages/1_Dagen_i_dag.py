@@ -1,6 +1,7 @@
 import os
 import requests
 import streamlit as st
+from styles import apply_base_style
 
 
 # URL til FastAPI-backend.
@@ -16,76 +17,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
-# Custom CSS styling.
-# Bruges til at skabe et mere moderne og minimalistisk design.
+# Indlæser fælles CSS-styling.
+# Styling ligger i styles.py for at undgå gentaget CSS-kode.
 st.markdown(
-    """
-    <style>
-
-    /* Skjuler Streamlits standardmenu og footer */
-    #MainMenu, footer {
-        visibility: hidden;
-    }
-
-    /* Styling af hele appens baggrund og tekst */
-    .stApp {
-        background-color: #f3f4f6;
-        color: #111827;
-    }
-
-    /* Begrænser bredden på indholdet
-       og skaber luft omkring formularen */
-    .block-container {
-        max-width: 950px;
-        padding-top: 2rem;
-        padding-bottom: 4rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    /* Styling af hver container-boks */
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #ffffff;
-        border: 2px solid #cbd5e1;
-        border-radius: 18px;
-        padding: 22px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-    }
-
-    /* Sikrer tydelige tekstfarver */
-    h1, h2, h3, label, p, span {
-        color: #111827 !important;
-    }
-
-    /* Flytter submit-knappen mod højre */
-    div[data-testid="stFormSubmitButton"] {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    /* Styling af submit-knappen */
-    div[data-testid="stFormSubmitButton"] button {
-        width: 260px;
-        height: 55px;
-        border-radius: 12px;
-        border: none;
-        background-color: #111827 !important;
-        color: #ffffff !important;
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    /* Sikrer at teksten i knappen er hvid */
-    div[data-testid="stFormSubmitButton"] button p {
-        color: #ffffff !important;
-    }
-
-    </style>
-    """,
+    apply_base_style(),
     unsafe_allow_html=True,
 )
+
 
 
 # Titel på registreringssiden.

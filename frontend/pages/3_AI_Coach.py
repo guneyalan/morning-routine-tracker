@@ -1,6 +1,7 @@
 import os   
 import requests
 import streamlit as st
+from styles import apply_base_style
 
 
 # URL til FastAPI-backend.
@@ -16,44 +17,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
-# Custom CSS styling.
-# Holder siden i samme simple og minimalistiske stil som resten af appen.
+# Indlæser fælles CSS-styling.
+# Styling ligger i styles.py for at undgå gentaget CSS-kode.
 st.markdown(
-    """
-    <style>
-
-    /* Skjuler Streamlits standardmenu og footer */
-    #MainMenu, footer {
-        visibility: hidden;
-    }
-
-    /* Appens baggrund og grundfarve */
-    .stApp {
-        background: #f5f5f3;
-        color: #222;
-    }
-
-    /* Gør indholdet smallere og mere læsbart */
-    .block-container {
-        max-width: 900px;
-        padding-top: 3rem;
-    }
-
-    /* Styling af AI-knappen */
-    div.stButton > button {
-        width: 100%;
-        height: 70px;
-        border-radius: 14px;
-        border: none;
-        background: #222;
-        color: white;
-        font-size: 20px;
-        font-weight: 600;
-    }
-
-    </style>
-    """,
+    apply_base_style(),
     unsafe_allow_html=True,
 )
 
