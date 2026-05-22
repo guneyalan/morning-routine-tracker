@@ -3,3 +3,4 @@ date,wake_up_time,sleep_hours,training,shower_type,breakfast,water_glasses,task_
 2026-05-27,05:30,7.5,True,normalt bad,False,3,Hvile,Gå en tur,Lave lektier,8,JEg er ked af det
 2026-05-30,05:30,10.0,True,normalt bad,True,5,Rutsje,Mad,Boller i karry,8,Jeg er træt og ked
 2026-05-27,05:30,9.5,True,koldt bad,True,4,Handle ind,Læse op til eksamen i 3 timer,Ringe til mor,5,"Lidt stresset i dag, er nervøs for eksamen"
+2026-05-22,05:30,6.5,False,normalt bad,True,2,Læse til eksamen,Spise morgenmad,Ringe til mor når jeg kommer hjem,6,Jeg er lidt nervøs og eksamen

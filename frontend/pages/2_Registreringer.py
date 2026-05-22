@@ -1,8 +1,16 @@
-import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
+
+import sys
+from pathlib import Path
+
+import os
 import requests
 import streamlit as st
+
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 from styles import apply_base_style
 
 

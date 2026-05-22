@@ -1,4 +1,9 @@
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from styles import apply_base_style
 
@@ -37,30 +42,3 @@ st.write(
     """
 )
 
-
-# Navigation til appens tre hovedsider.
-col1, col2, col3 = st.columns(3)
-
-
-# Link til registreringssiden.
-with col1:
-    st.page_link(
-        "pages/1_Dagen_i_dag.py",
-        label="Registrering",
-    )
-
-
-# Link til statistik- og registreringssiden.
-with col2:
-    st.page_link(
-        "pages/2_Registreringer.py",
-        label="Statistik",
-    )
-
-
-# Link til AI-feedback-siden.
-with col3:
-    st.page_link(
-        "pages/3_AI_Coach.py",
-        label="AI-feedback",
-    )

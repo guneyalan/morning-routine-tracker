@@ -1,8 +1,13 @@
+import sys
+from pathlib import Path
+
 import os
 import requests
 import streamlit as st
-from styles import apply_base_style
 
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+
+from styles import apply_base_style
 
 # URL til FastAPI-backend.
 # Frontend bruger denne adresse til at sende og hente data.

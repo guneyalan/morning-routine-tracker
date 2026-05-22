@@ -38,7 +38,18 @@ def apply_base_style() -> str:
     /* Gør tekst tydelig og læsbar */
     h1, h2, h3, label, p, span {
         color: #111827 !important;
+
     }
+   /* Sidebar-navigation tekst */
+    section[data-testid="stSidebar"] * {
+    color: #bfdbfe !important;
+}
+
+/* Aktiv sidebar-side */
+    section[data-testid="stSidebar"] [aria-current="page"] * {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
 
     /* Flytter submit-knapper mod højre */
     div[data-testid="stFormSubmitButton"] {
@@ -62,6 +73,27 @@ def apply_base_style() -> str:
     div[data-testid="stFormSubmitButton"] button p {
         color: #ffffff !important;
     }
+
+    /* Styling af almindelige Streamlit-knapper */
+div.stButton > button {
+    background-color: #bfdbfe !important;
+    color: #0f172a !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Hover-effekt */
+div.stButton > button:hover {
+    background-color: #93c5fd !important;
+    color: #0f172a !important;
+}
+
+/* Fjerner Streamlits "running man" status-animation */
+[data-testid="stStatusWidget"] {
+    display: none !important;
+
+}
 
     </style>
     """
